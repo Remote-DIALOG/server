@@ -7,47 +7,37 @@ const {encryptPassword} = require('../utils/encryptPassword');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs/dist/bcrypt');
 const mysql = require('mysql')
-
+const util = require('util');
+const { errorMonitor } = require('events');
+const query = util.promisify(conn.query).bind(conn);
 // Profile
 router.post('/getclinets', async(req, res, next) => {
     try {
-        let {username} = req.body;
+        let {username} = req.body.args;
         if (!(username)) {
             res.status(400).send({"message":"All input is required"});
             return;
         }
-        const sqlSearch = "SELECT * FROM clinician WHERE emailId = ?"
-        const search_query = mysql.format(sqlSearch,[username])
-        let userinfo = await conn.query(search_query, async(error, result) => {
-            if (error) throw error
-            if (result.length==0 ) {
-                res.status(200).send({"message":"username not found"})
-                return;
-            }
-            else {
-                let userinfo = result[0];
-                let clientid = JSON.parse(userinfo.clientid);
-                let clinetlist = [];
-                console.log(clientid)
-                console.log(typeof(clientid))
-                    var sqlSearch = "SELECT name FROM clients WHERE id In ?"
-                    var search_query = mysql.format(sqlSearch,clientid)
-                    var clinetname = await conn.query(search_query);
-                    console.log(clinetname)
-                // const token = jwt.sign({user_id: userinfo._id, username},process.env.TOKEN_KEY,{expiresIn: "2h"});
-                // userinfo.token = token;
-                res.status(200).send(userinfo);
-                return;
-
-            }
-        });
-
+        var sqlSearch = "SELECT * FROM userinfo WHERE emailid = ?"
+        var search_query = mysql.format(sqlSearch,[username])
+        let userinfo = await query(search_query)
+        if (userinfo.length == 0) {
+            res.status(400).send({"message":"user not found incorrect username"})
+        }
+        let userid= userinfo[0].id
+        var sqlSearch = "SELECT * FROM clients INNER JOIN clinetlist ON clients.id = clinetlist.clientid AND clinetlist.clinicianid =?"
+        var search_query = mysql.format(sqlSearch,[userid])
+        let clientlist = await query(search_query)
+        res.status(200).send(clientlist)
     }catch(error) {
         console.error(error);
         res.status(400).send("something went error");
         
     }
 })
+router.post("/addCliner", async(req, res, next) => {
+    
+}) 
 router.get('/profile', auth, (req, res, next) => {
     res.status(200).send("welcome to profile")
 });
