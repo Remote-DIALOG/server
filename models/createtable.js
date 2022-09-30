@@ -1,6 +1,6 @@
-const bcrypt = require('bcryptjs/dist/bcrypt');
-const jwt = require('jsonwebtoken');
-const conn = require('../config/database');
+// const bcrypt = require('bcryptjs/dist/bcrypt');
+// const jwt = require('jsonwebtoken');
+// const conn = require('../config/database');
 // tablelist = {
 //     "usertable" : "CREATE TABLE IF NOT EXISTS usertable (name VARCHAR(225) NOT NULL PRIMARY KEY, password VARCHAR(225), type VARCHAR(225), emailid VARCHAR(225))",
 //     "clinician" :"CREATE TABLE IF NOT EXISTS clinician (id INT NOT NULL PRIMARY KEY AUTO_INCREMENT, name VARCHAR(225), emailId VARCHAR(225), clientid JSON)",
