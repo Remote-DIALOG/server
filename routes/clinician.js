@@ -4,13 +4,11 @@ const router = express.Router();
 const pool = require('../config/database');
 const auth = require('../middleware/auth');
 const bcrypt = require('bcryptjs/dist/bcrypt');
-const mysql = require('mysql');
-const { CLIENT_IGNORE_SPACE } = require('mysql/lib/protocol/constants/client');
 
 router.post('/getclinets', async(req, res, next) => {
     let conn;
     try {
-        let {username} = req.body.args;
+        let {username} = req.body;
         if (!(username)) {
             res.status(400).send({"message":"All input is required"});
             return;
@@ -28,7 +26,7 @@ router.post('/getclinets', async(req, res, next) => {
     }catch(error) {
         console.error(error);
         res.status(400).send({"message":"something went error"});
-        
+
     } finally {
         if (conn) return conn.release();
     }
@@ -36,20 +34,21 @@ router.post('/getclinets', async(req, res, next) => {
 router.post("/addClient", async(req, res, next) => {
     let conn;
     try {
-    let clinicianid  = req.body.args.clinicianId;
-    let clientname = req.body.args.clientname;
-    let emailid = req.body.args.email;
-    let password = req.body.args.password;
+    let clinicianid  = req.body.clinicianId;
+    let clientname = req.body.clientname;
+    let emailid = req.body.email;
+    let password = req.body.password;
     let category = "client";
     if (!(clinicianid) && !(clientname) && !(emailid) && !(password)) {
         res.status(400).send({"message":"All input is required"});
         return;
     }
     const encryptpassword = await bcrypt.hash(password, 10);
+    console.log("encrypt password = " ,encryptpassword)
     conn = await pool.getConnection();
     let result = await conn.query("INSERT INTO userinfo(emailid, category, passwords) VALUES(?,?,?)",[emailid, category, encryptpassword]);
     // console.log("in userinfo:-", result)
-    
+
     if (result==undefined) {
         console.log("unable into useinfo table");
         res.status(400).send({"message":"user not added"});
@@ -59,16 +58,16 @@ router.post("/addClient", async(req, res, next) => {
 
     let clientUpdate = await conn.query("INSERT INTO clients(fullname, address) VALUES(?,?)",[clientname, null]);
     // console.log("in clinet table", clientUpdate);
-    
-    
+
+
     if (clientUpdate==undefined) {
         console.log("unable into clients table")
         res.status(400).send({"message":"user not added"});
         return;
     }
     let listupdate = await conn.query("INSERT INTO clinetlist(clinicianid, clientid) VALUES(?,?)",[clinicianid, parseInt(clientUpdate.insertId) ] );
-    
-    
+
+
     // console.log("updated lisit"+listupdate);
     if (listupdate==undefined) {
         console.log("unable to insert in clinet list table");
@@ -78,7 +77,8 @@ router.post("/addClient", async(req, res, next) => {
     }
     res.status(200).send({"message":"user added sucessfully"});
     }catch(error) {
-        res.status(400).send({"message":"something went wrong"})
+        console.log("error", error)
+        res.status(400).send({"message":"something went wrong", "error":error})
     }
 })
 module.exports = router;
