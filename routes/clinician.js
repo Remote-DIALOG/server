@@ -4,7 +4,7 @@ const router = express.Router();
 const pool = require('../config/database');
 const auth = require('../middleware/auth');
 const bcrypt = require('bcryptjs/dist/bcrypt');
-
+const { response } = require('express');
 router.post('/getclinets', async(req, res, next) => {
     let conn;
     try {
@@ -46,20 +46,23 @@ router.post("/addClient", async(req, res, next) => {
     const encryptpassword = await bcrypt.hash(password, 10);
     console.log("encrypt password = " ,encryptpassword)
     conn = await pool.getConnection();
+    let fidnQuery = "SELECT * FROM userinfo WHERE emailid='"+emailid+"'";
+    let findUser = await conn.query(fidnQuery);
+    console.log(findUser)
+    if (findUser.length>0) {
+        res.status(400).send({"message":"user already exist"});
+        return;
+    }
     let result = await conn.query("INSERT INTO userinfo(emailid, category, passwords) VALUES(?,?,?)",[emailid, category, encryptpassword]);
-    // console.log("in userinfo:-", result)
+    console.log("in userinfo:-", result)
 
     if (result==undefined) {
         console.log("unable into useinfo table");
         res.status(400).send({"message":"user not added"});
         return;
     }
-
-
-    let clientUpdate = await conn.query("INSERT INTO clients(fullname, address) VALUES(?,?)",[clientname, null]);
-    // console.log("in clinet table", clientUpdate);
-
-
+    let clientUpdate = await conn.query("INSERT INTO clients(fullname, address, clinetid) VALUES(?,?,?)",[clientname, null, parseInt(result.insertId)]);
+    console.log("clientUpdates")
     if (clientUpdate==undefined) {
         console.log("unable into clients table")
         res.status(400).send({"message":"user not added"});
@@ -68,7 +71,7 @@ router.post("/addClient", async(req, res, next) => {
     let listupdate = await conn.query("INSERT INTO clinetlist(clinicianid, clientid) VALUES(?,?)",[clinicianid, parseInt(clientUpdate.insertId) ] );
 
 
-    // console.log("updated lisit"+listupdate);
+    console.log("updated lisit"+listupdate);
     if (listupdate==undefined) {
         console.log("unable to insert in clinet list table");
         res.status(400).send({"message":"user not added in list table"});

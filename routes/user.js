@@ -10,7 +10,6 @@ var bcrypt      = require('bcryptjs');
 router.post('/login', async(req, res, next) => {
     let conn;
     try {
-        console.log("-------->", req.body);
         let {username, password} = req.body;
         if (!(username && password)) {
             res.status(400).send({"message":"All input is required"});
@@ -20,12 +19,12 @@ router.post('/login', async(req, res, next) => {
         let query = "SELECT * FROM userinfo WHERE emailid='"+username+"'";
         let rows = await conn.query(query);
         if (rows==undefined || rows.length==0) {
-            res.status(200).send({"message":"user no found"});
+            res.status(400).send({"message":"user no found"});
             return;
         }
-        let comparepasswod = await bcrypt.compare(password, rows[0].passwords)
-        if (!comparepasswod) {
-            res.status(200).send({"message":"password does not match"});
+        let comparepassword = await bcrypt.compare(password, rows[0].passwords)
+        if (!comparepassword) {
+            res.status(400).send({"message":"password does not match"});
             return;
         }
         let userinfo = rows[0];
