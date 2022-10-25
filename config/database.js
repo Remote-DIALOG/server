@@ -7,7 +7,7 @@ const pool = mariadb.createPool({
     port: '3306',
     user: 'admin',
     password:'F0r906yr',
-    database:'devdatabase',
+    database:'dialogplus',
     connectionLimit: 5
 });
 module.exports={

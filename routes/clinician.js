@@ -35,7 +35,7 @@ router.post("/addClient", async(req, res, next) => {
     let conn;
     try {
     let clinicianid  = req.body.clinicianId;
-    let clientname = req.body.clientname;
+    let fullname = req.body.fullname;
     let emailid = req.body.email;
     let password = req.body.password;
     let category = "client";
@@ -61,7 +61,7 @@ router.post("/addClient", async(req, res, next) => {
         res.status(400).send({"message":"user not added"});
         return;
     }
-    let clientUpdate = await conn.query("INSERT INTO clients(fullname, address, clinetid) VALUES(?,?,?)",[clientname, null, parseInt(result.insertId)]);
+    let clientUpdate = await conn.query("INSERT INTO clients(fullname, address, clinetid) VALUES(?,?,?)",[fullname, null, parseInt(result.insertId)]);
     console.log("clientUpdates")
     if (clientUpdate==undefined) {
         console.log("unable into clients table")
