@@ -9,18 +9,28 @@ router.post('/saveSession', async(req, res, next) => {
     try{
         conn = await pool.getConnection()
         let currentSession = req.body;
-        if (currentSession.length!=13){
+        if (currentSession==undefined || Object.keys(currentSession).length === 0 && Object.getPrototypeOf(currentSession) === Object.prototype){
             res.status(200).send({"message":"input is not correct check again"});
             return;
         }
-        let created_by = currentSession['created_by']
-        let created_at = currentSession['created_at']
-        console.log(created_by, created_at)
-        // for(var i=0;i<currentSession.lenght;i++) {
-        //     if (currentSession[i])
-        //     let result = await conn.query("INSERT INTO (emailid, category, passwords) VALUES(?,?,?)",[emailid, category, encryptpassword]);
-
-        // }
+        let created_at, clinetid
+        for(var i=0;i<currentSession.length;i++) {
+            if (currentSession[i].hasOwnProperty("created_at")) {
+                created_at = currentSession[i].created_at
+            }
+            if (currentSession[i].hasOwnProperty("created_by")) {
+                clinetid = currentSession[i].created_by
+            }
+        }
+        // console.log(created_at, clinetid)
+        for (var i=0;i<currentSession.length;i++) {
+            if (currentSession[i].hasOwnProperty("name")) {
+                console.log(currentSession[i])
+                let result = await conn.query("INSERT INTO session(clientid, scale, rating, date,help) VALUES(?,?,?,?,?)",[clinetid, currentSession[i].name, currentSession[i].value, created_at, null]);
+                console.log("inseration in session table ", currentSession[i], result);
+            }
+        }
+        res.status(200).send({"message":"session is inserted into table"});
     
     }catch(error) {
         console.log(error)
