@@ -3,10 +3,12 @@ const router = express.Router();
 const pool = require('../config/database');
 const auth = require('../middleware/auth');
 const bcrypt = require('bcryptjs/dist/bcrypt');
+const { set } = require('mongoose');
 router.post('/getSessionDates', async(req, res, next) => {
     let conn;
     try {
         let clientid = req.body.clientid;
+        console.log("---------->",clientid)
         if(!(clientid)) {
             res.status(400).send({"message":"All input required"});
             return;
@@ -18,10 +20,18 @@ router.post('/getSessionDates', async(req, res, next) => {
             res.status(400).send({"message":"no data found"});
             return;
         }
-        res.status(200).send(rows)
+        let dates = []
+        for (var i = 0; i<rows.length;i++) {
+            let time = JSON.stringify(rows[i].date)
+            if (dates.includes(time)==false) {
+                dates.push(time)
+            }
+        }
+        // console.log(dates)
+        res.status(200).send(dates)
     } catch(error) {
         console.log(error);
-        res.status(400).send({"message":"something went wrong"});
+        res.status(400).send({"message":"something went wrong", "error":error.stack});
     } finally {
         if (conn) return conn.release();
     }
