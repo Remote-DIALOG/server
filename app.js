@@ -15,11 +15,11 @@ const app = express()
 const os = require('os');
 const networkInterfaces = os.networkInterfaces();
 
-// app.use(express.static(path.join(__dirname, '/dialogplus/build/')));
-// app.get('/*', function(req, res) {
-//     res.sendFile(path.join(__dirname,'/dialogplus/build/', 'index.html'))
-// })
-app.use(cors());
+app.use(express.static(path.join(__dirname, '/dialogplus/build/')));
+app.get('/*', function(req, res) {
+    res.sendFile(path.join(__dirname,'/dialogplus/build/', 'index.html'))
+})
+app.use(cors())
 app.use(bodyParser.json());
 app.use(morgan('combined'))
 //routes
