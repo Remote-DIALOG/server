@@ -3,7 +3,6 @@ const router = express.Router();
 const pool = require('../config/database');
 const auth = require('../middleware/auth');
 const bcrypt = require('bcryptjs/dist/bcrypt');
-const { set } = require('mongoose');
 router.post('/getSessionDates', async(req, res, next) => {
     let conn;
     try {
@@ -22,7 +21,7 @@ router.post('/getSessionDates', async(req, res, next) => {
         }
         let dates = []
         for (var i = 0; i<rows.length;i++) {
-            let time = JSON.stringify(rows[i].date)
+            let time = JSON.stringify(rows[i].dates)
             if (dates.includes(time)==false) {
                 dates.push(time)
             }

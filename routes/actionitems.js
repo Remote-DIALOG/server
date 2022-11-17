@@ -5,44 +5,44 @@ const auth = require('../middleware/auth');
 const bcrypt = require('bcryptjs/dist/bcrypt');
 router.post('/addNotes', async(req, res, next) => {
     let conn;
-    console.log("add notes")
     try {
-        console.log(req.body.args)
-        let {createdBy, createdAt, message} = req.body.args;
-        if (!(createdBy) || !(createdAt) || !(message)) {
+        console.log(req.body)
+        let createAt = req.body.created_at;
+        let createdBy = req.body.createdby;
+        let message  = req.body.message
+        if (!(createdBy) || !(createAt) || !(message)) {
             res.status(400).send({"message": "all input required"});
             return;
         }
         conn = await pool.getConnection();
-        let result = await conn.query("INSERT INTO actionitems(createdBy, createdAt, message) VALUES(?,?,?)",[createdBy, createdAt, message]);
-        console.log("------->", result);
+        let result = await conn.query("INSERT INTO notes(created_at, created_by, message) VALUES(?,?,?)",[createAt, createdBy, message]);
         if (result==undefined) {
             console.log("unable into useinfo table");
-            res.status(400).send({"message":"user not added"});
+            res.status(400).send({"message":"cant add notes to database"});
             return;
         }
         res.status(200).send({"message":"suceesfully added to database"});
     }catch(error) {
         console.log(error);
-        res.status(400).send({"message":"something went wrong"})
+        res.status(400).send({"message":"something went wrong", "error":error.stack})
     } finally {
         if (conn) return conn.release();
     }
 });
 
 
-router.get('/getnotes', async(req, res, next) => {
+router.post('/getnotes', async(req, res, next) => {
     let conn;
     console.log("getnotes")
     try {
         console.log(req.body)
-        let {emailid} = req.body.args;
+        let {emailid} = req.body;
         if (!(emailid)) {
             res.status(400).send({"message": "all input required"});
             return;
         }
         conn = await pool.getConnection();
-        let query = "SELECT * FROM actionitems WHERE createBy='"+emailid+"'";
+        let query = "SELECT * FROM notes WHERE created_by='"+emailid+"'";
         let rows = await conn.query(query);
         if (rows==undefined || rows.length==0) {
             res.status(400).send({"message":"action items not found incorrect username"})
