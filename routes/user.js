@@ -28,7 +28,7 @@ router.post('/login', async(req, res, next) => {
             return;
         }
         let userinfo = rows[0];
-        let token = jwt.sign({user_id: userinfo._id, username},process.env.TOKEN_KEY,{expiresIn: "2h"});
+        let token = jwt.sign({user_id: userinfo._id, userinfo},process.env.TOKEN_KEY,{expiresIn: "2h"});
         userinfo.token = token;
         res.status(200).send(userinfo);
         return;
