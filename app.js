@@ -4,6 +4,7 @@ const http = require('http');
 const path = require('path');
 const bodyParser = require('body-parser');
 const { Server } = require("socket.io");
+const os = require('os')
 const cors = require('cors');
 const passport = require('passport');
 const morgan = require('morgan')
@@ -14,7 +15,12 @@ const client = require('./routes/clinet');
 const actionitem = require('./routes/actionitems');
 const app = express()
 const jwt = require('jsonwebtoken');
-
+var STATIC_CHANNELS = [{
+  name: 'session',
+  participants: 0,
+  id: 2,
+  sockets: []
+}];
 
 
 // add middlewares
@@ -41,19 +47,17 @@ const server = http.createServer(app)
 const port = process.env.PORT
 const io = require("socket.io")(server, {
     cors: {
+      origin:"*",
       methods: ["GET", "POST"],
-      credentials: true
     }
   });
 io.use(async (socket, next) => {
-    // fetch token from handshake auth sent by FE
     const token = socket.handshake.auth.token;
     try {
-      // verify jwt token and get user data
       const user = await jwt.verify(token, process.env.TOKEN_KEY);
-      console.log('user', user);
-      // save the user data into socket object, to be used further
-      socket.user = user;
+      // console.log('user', user);
+
+
       next();
     } catch (e) {
       // if token is invalid, close connection
@@ -63,21 +67,28 @@ io.use(async (socket, next) => {
 });
 
 
-io.on('connection', (socket)=> {
-    console.log('new client connected with id = ', socket.id);
-    // socket.on('join_room', (data) => {
-    //     console.log("join room")
-    //     console.log("data====>", data)
-    //     // socket.join(room); // Join the user to a socket room
-    //   });
+io.on('connection', async (socket)=> {
+  let room = []  
+    const token = socket.handshake.auth.token;
+    const user = await jwt.verify(token, process.env.TOKEN_KEY);
+    console.log('user', user);
+    
+    socket.on("join_room", (data)=>{
+      socket.join(data)
+      console.log(`User with id: ${socket.id} joined room: ${data}`)
+    });
 
-    socket.on("join_room", (arg, callback) => {
-        console.log(arg); // "world"
-        callback("got it");
-      });
+    socket.on("send_message", (data) => {
+      socket.to(data.id).emit("recevice_message", data)
+      console.log(data)
+    });
+    
+    socket.on('disconnet', ()=>{
+      console.log('a user disconnected', socket.id)
+    });
 });
 
 server.listen(port, ()=>{
-    //console.log(networkInterfaces["en0"][1].address+":"+port)
-    console.log(`server starting at port ${port}`)
+    console.log(os.networkInterfaces().en0)
+    // console.log(`server starting at port ${port}`)
 })

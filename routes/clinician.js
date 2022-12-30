@@ -4,7 +4,6 @@ const router = express.Router();
 const pool = require('../config/database');
 const auth = require('../middleware/auth');
 const bcrypt = require('bcryptjs/dist/bcrypt');
-const { response } = require('express');
 router.post('/getclinets', async(req, res, next) => {
     let conn;
     try {
@@ -14,18 +13,18 @@ router.post('/getclinets', async(req, res, next) => {
             return;
         }
         conn = await pool.getConnection();
-        let query = "SELECT * FROM userinfo WHERE emailid='"+username+"'";
+        let query = "SELECT * FROM userinfo WHERE username='"+username+"'";
         let rows = await conn.query(query);
         if (rows==undefined || rows.length==0) {
             res.status(400).send({"message":"user not found incorrect username"})
         }
         let userid= rows[0].id
-        var sqlSearch = "SELECT * FROM clients INNER JOIN clinetlist ON clients.id = clinetlist.clientid AND clinetlist.clinicianid='"+userid+"'";
+        var sqlSearch = "SELECT * FROM userinfo INNER JOIN clientlist ON clientlist.clientid= userinfo.id AND clientlist.clinicianid='"+userid+"'";
         let clientlist = await conn.query(sqlSearch)
         res.status(200).send(clientlist)
     }catch(error) {
         console.error(error);
-        res.status(400).send({"message":"something went error"});
+        res.status(400).send({"message":"something went error", "error":error.stack});
 
     } finally {
         if (conn) return conn.release();
@@ -46,30 +45,20 @@ router.post("/addClient", async(req, res, next) => {
     const encryptpassword = await bcrypt.hash(password, 10);
     console.log("encrypt password = " ,encryptpassword)
     conn = await pool.getConnection();
-    let fidnQuery = "SELECT * FROM userinfo WHERE emailid='"+emailid+"'";
+    let fidnQuery = "SELECT * FROM userinfo WHERE username='"+emailid+"'";
     let findUser = await conn.query(fidnQuery);
-    console.log(findUser)
     if (findUser.length>0) {
         res.status(400).send({"message":"user already exist"});
         return;
     }
-    let result = await conn.query("INSERT INTO userinfo(emailid, category, passwords) VALUES(?,?,?)",[emailid, category, encryptpassword]);
-    console.log("in userinfo:-", result)
+    let result = await conn.query("INSERT INTO userinfo(username, category, password, full_name) VALUES(?,?,?,?)",[emailid, category, encryptpassword, fullname]);
 
     if (result==undefined) {
         console.log("unable into useinfo table");
         res.status(400).send({"message":"user not added"});
         return;
     }
-    let clientUpdate = await conn.query("INSERT INTO clients(fullname, address, clinetid) VALUES(?,?,?)",[fullname, null, parseInt(result.insertId)]);
-    console.log("clientUpdates")
-    if (clientUpdate==undefined) {
-        console.log("unable into clients table")
-        res.status(400).send({"message":"user not added"});
-        return;
-    }
-    let listupdate = await conn.query("INSERT INTO clinetlist(clinicianid, clientid) VALUES(?,?)",[clinicianid, parseInt(clientUpdate.insertId) ] );
-
+    let listupdate = await conn.query("INSERT INTO clientlist(clinicianid, clientid) VALUES(?,?)",[clinicianid, parseInt(result.insertId) ] );
 
     console.log("updated lisit"+listupdate);
     if (listupdate==undefined) {

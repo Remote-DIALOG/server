@@ -1,12 +1,10 @@
 // use dialogplus;
-// CREATE TABLE IF NOT EXISTS userinfo (id INT NOT NULL PRIMARY KEY AUTO_INCREMENT, username VARCHAR(225), password VARCHAR(225), category VARCHAR(225), lastlogin VARCHAR(255));
-// CREATE TABLE IF NOT EXISTS clinician (id INT NOT NULL PRIMARY KEY AUTO_INCREMENT, full_name VARCHAR(225), clinicianid INT,  FOREIGN KEY (clinicianid) REFERENCES userinfo(id));
-// CREATE TABLE IF NOT EXISTS client (id INT NOT NULL PRIMARY KEY AUTO_INCREMENT, full_name VARCHAR(225), clientid INT,  FOREIGN KEY (clientid) REFERENCES userinfo(id));
-// CREATE TABLE IF NOT EXISTS clientlist(clinicianid INT, clientid INT, FOREIGN KEY (clinicianid) REFERENCES clinician(clinicianid), FOREIGN KEY (clientid) REFERENCES client(clientid));
+// CREATE TABLE IF NOT EXISTS userinfo (id INT NOT NULL PRIMARY KEY AUTO_INCREMENT, username VARCHAR(225), password VARCHAR(225), category VARCHAR(225), full_name varchar(255));
+// CREATE TABLE IF NOT EXISTS clientlist(clinicianid INT, clientid INT, FOREIGN KEY (clinicianid) REFERENCES userinfo(id), FOREIGN KEY (clientid) REFERENCES userinfo(id));
 // CREATE TABLE IF NOT EXISTS session (
 // 	id INT NOT NULL PRIMARY KEY AUTO_INCREMENT, 
-//     clientId INT, FOREIGN KEY (clientid) REFERENCES client(clientid), 
-//     clinicianid INT, FOREIGN KEY (clinicianid) REFERENCES clinician(clinicianid),
+//     clientId INT, FOREIGN KEY (clientid) REFERENCES userinfo(id), 
+//     clinicianid INT, FOREIGN KEY (clinicianid) REFERENCES userinfo(id),
 // 	scale VARCHAR(225),
 //     rating INT,
 //     helped VARCHAR(225),

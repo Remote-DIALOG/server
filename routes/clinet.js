@@ -6,8 +6,7 @@ const bcrypt = require('bcryptjs/dist/bcrypt');
 router.post('/getSessionDates', async(req, res, next) => {
     let conn;
     try {
-        let clientid = req.body.clientid;
-        console.log("---------->",clientid)
+        let clientid = req.body.id;
         if(!(clientid)) {
             res.status(400).send({"message":"All input required"});
             return;
@@ -38,13 +37,15 @@ router.post('/getSessionDates', async(req, res, next) => {
 router.post('/getClinetinfo', async(req, res, next) => {
     let conn;
     try {
+
+        console.log("---------------> in clientinfo", req.body)
         let {id} = req.body
         if (!id) {
             console.log(req.body)
             res.status(400).send({"message":"all input required"})
             return
         }
-        let findUser = "SELECT * from clients WHERE clinetid="+id;
+        let findUser = "SELECT * from userinfo WHERE id="+id;
         conn = await pool.getConnection()
         let data = await conn.query(findUser)
         if (data==undefined || data.length==0) {
