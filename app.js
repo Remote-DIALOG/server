@@ -89,6 +89,6 @@ io.on('connection', async (socket)=> {
 });
 
 server.listen(port, ()=>{
-    console.log(os.networkInterfaces().en0)
-    // console.log(`server starting at port ${port}`)
+    // console.log(os.networkInterfaces().en0)
+    console.log(`server starting at port ${port}`)
 })
