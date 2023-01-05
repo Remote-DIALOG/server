@@ -24,10 +24,7 @@ var STATIC_CHANNELS = [{
 
 
 // add middlewares
-app.use(express.static(path.join(__dirname, '/dialogplus/build/')));
-app.get('/*', function(req, res) {
-    res.sendFile(path.join(__dirname,'/dialogplus/build/', 'index.html'))
-})
+
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     next();
@@ -35,6 +32,10 @@ app.use((req, res, next) => {
 app.use(cors())
 app.use(bodyParser.json());
 app.use(morgan('combined'))
+
+app.get("/ping", async(req, res)=>{
+  res.status(200).send("Server is alive")
+})
 //routes
 app.use('/users', users);
 app.use('/clinician', clinician);
@@ -42,6 +43,10 @@ app.use('/session', session);
 app.use('/client', client);
 app.use('/actionitem', actionitem);
 
+app.use(express.static(path.join(__dirname, '/dialogplus/build/')));
+app.get('/*', function(req, res) {
+    res.sendFile(path.join(__dirname,'/dialogplus/build/', 'index.html'))
+})
 // creating server for rtc
 const server = http.createServer(app)
 const port = process.env.PORT
