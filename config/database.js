@@ -12,10 +12,10 @@ const pool = mariadb.createPool({
     connectionLimit: 5
 });
 // const pool = mariadb.createPool({
-//     host: 'dialogplus.cfyohciwuyqk.us-east-1.rds.amazonaws.com',
+//     host: 'localhost',
 //     port: '3306',
-//     user: 'admin',
-//     password:'F0r906yr',
+//     user: 'qmul',
+//     password:'F0r906yr@',
 //     database:'dialogplus',
 //     connectionLimit: 5
 // });

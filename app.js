@@ -13,6 +13,7 @@ const clinician = require('./routes/clinician')
 const session = require('./routes/session');
 const client = require('./routes/clinet');
 const actionitem = require('./routes/actionitems');
+const ping = require('./routes/ping')
 const app = express()
 const jwt = require('jsonwebtoken');
 var STATIC_CHANNELS = [{
@@ -33,20 +34,19 @@ app.use(cors())
 app.use(bodyParser.json());
 app.use(morgan('combined'))
 
-app.get("/ping", async(req, res)=>{
-  res.status(200).send("Server is alive")
+app.use(express.static(path.join(__dirname, '/dialogplus/build/')));
+app.get('/*', function(req, res) {
+    res.sendFile(path.join(__dirname,'/dialogplus/build/', 'index.html'))
 })
+
 //routes
 app.use('/users', users);
 app.use('/clinician', clinician);
 app.use('/session', session);
 app.use('/client', client);
 app.use('/actionitem', actionitem);
+app.use('/ping', ping)
 
-app.use(express.static(path.join(__dirname, '/dialogplus/build/')));
-app.get('/*', function(req, res) {
-    res.sendFile(path.join(__dirname,'/dialogplus/build/', 'index.html'))
-})
 // creating server for rtc
 const server = http.createServer(app)
 const port = process.env.PORT
