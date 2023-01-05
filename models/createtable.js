@@ -4,7 +4,6 @@
 // CREATE TABLE IF NOT EXISTS session (
 // 	id INT NOT NULL PRIMARY KEY AUTO_INCREMENT, 
 //     clientId INT, FOREIGN KEY (clientid) REFERENCES userinfo(id), 
-//     clinicianid INT, FOREIGN KEY (clinicianid) REFERENCES userinfo(id),
 // 	scale VARCHAR(225),
 //     rating INT,
 //     helped VARCHAR(225),
@@ -27,3 +26,25 @@
 // 	parent_note_id INT, FOREIGN KEY (parent_note_id) REFERENCES notes(id),
 //     child_note_id INT, FOREIGN KEY (child_note_id) REFERENCES notes(id)
 // );
+// username = qmul
+// password = F0r906yr@
+// const mariadb = require("mariadb");
+// const pool = mariadb.createPool({
+//     host: 'localhost', 
+//     port: '3306',
+//     user: 'qmul',
+//     password:'F0r906yr@',
+//     database:'dialogplus', 
+//     connectionLimit: 5
+// });
+// module.exports={
+//     getConnection: function(){
+//         return new Promise(function(resolve,reject){
+//             pool.getConnection().then(function(connection){
+//                 resolve(connection);
+//             }).catch(function(error){
+//                 reject(error);
+//             });
+//         });
+//     }
+// }
