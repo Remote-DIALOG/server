@@ -6,7 +6,7 @@ const bcrypt = require('bcryptjs/dist/bcrypt');
 router.post('/getSessionDates', async(req, res, next) => {
     let conn;
     try {
-        let clientid = req.body.id;
+        let clientid = req.body.clientid;
         if(!(clientid)) {
             res.status(400).send({"message":"All input required"});
             return;
@@ -15,12 +15,12 @@ router.post('/getSessionDates', async(req, res, next) => {
         let query = "SELECT * FROM session WHERE clientid='"+clientid+"'";
         let rows = await conn.query(query);
         if (rows==undefined || rows.length==0) {
-            res.status(400).send({"message":"no data found"});
+            res.status(404).send({"message":"no data found"});
             return;
         }
         let dates = []
         for (var i = 0; i<rows.length;i++) {
-            let time = JSON.stringify(rows[i].dates)
+            let time = JSON.stringify(rows[i].created_at)
             if (dates.includes(time)==false) {
                 dates.push(time)
             }
@@ -37,8 +37,6 @@ router.post('/getSessionDates', async(req, res, next) => {
 router.post('/getClinetinfo', async(req, res, next) => {
     let conn;
     try {
-
-        console.log("---------------> in clientinfo", req.body)
         let {id} = req.body
         if (!id) {
             console.log(req.body)

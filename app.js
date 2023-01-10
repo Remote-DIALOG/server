@@ -56,28 +56,11 @@ const io = require("socket.io")(server, {
       methods: ["GET", "POST"],
     }
   });
-// io.use(async (socket, next) => {
-//     const token = socket.handshake.auth.token;
-//     try {
-//       const user = await jwt.verify(token, process.env.TOKEN_KEY);
-//       // console.log('user', user);
-
-
-//       next();
-//     } catch (e) {
-//       // if token is invalid, close connection
-//       console.log('error', e.message);
-//       return next(new Error(e.message));
-//     }
-// });
-
-
 io.on('connection', async (socket)=> {
   let room = []  
     const token = socket.handshake.auth.token;
     const user = await jwt.verify(token, process.env.TOKEN_KEY);
     // console.log('user', user);
-    socket.o
     socket.on("join_room", (data)=>{
       socket.join(data)
       console.log(`User with id: ${socket.id} joined room: ${data}`)
@@ -86,6 +69,18 @@ io.on('connection', async (socket)=> {
       socket.to(data.id).emit("recevice_message", data)
       console.log(data)
     });
+    // socket.on("saveSession", (data)=> {
+// 
+    // })
+
+    socket.on("selectscale", (data)=>{
+      socket.to(data.id).emit("selectscale",data)
+    })
+
+    socket.on("deselectscale", (data)=>{
+      socket.to(data.id).emit("deselectscale",data)
+    })
+
     socket.on('disconnet', ()=>{
       console.log('a user disconnected', socket.id)
     });

@@ -60,7 +60,6 @@ router.post("/addClient", async(req, res, next) => {
     }
     let listupdate = await conn.query("INSERT INTO clientlist(clinicianid, clientid) VALUES(?,?)",[clinicianid, parseInt(result.insertId) ] );
 
-    console.log("updated lisit"+listupdate);
     if (listupdate==undefined) {
         console.log("unable to insert in clinet list table");
         res.status(400).send({"message":"user not added in list table"});
