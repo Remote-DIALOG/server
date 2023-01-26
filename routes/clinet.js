@@ -5,6 +5,7 @@ const auth = require('../middleware/auth');
 const bcrypt = require('bcryptjs/dist/bcrypt');
 router.post('/getSessionDates', async(req, res, next) => {
     let conn;
+    console.log("------->",req.body)
     try {
         let clientid = req.body.clientid;
         if(!(clientid)) {
