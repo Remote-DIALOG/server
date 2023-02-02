@@ -67,7 +67,7 @@ io.on('connection', async (socket)=> {
     });
     socket.on("send_message", (data) => {
       socket.to(data.id).emit("recevice_message", data)
-      console.log(data)
+      // console.log(data)
     });
     // socket.on("saveSession", (data)=> {
 // 
