@@ -69,9 +69,9 @@ io.on('connection', async (socket)=> {
       socket.to(data.id).emit("recevice_message", data)
       // console.log(data)
     });
-    // socket.on("saveSession", (data)=> {
-// 
-    // })
+    socket.on("review", (data)=> {
+      socket.to(data.id).emit("movetoReview", data)
+    })
 
     socket.on("selectscale", (data)=>{
       socket.to(data.id).emit("selectscale",data)
