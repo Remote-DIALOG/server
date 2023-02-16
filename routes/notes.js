@@ -6,18 +6,18 @@ const bcrypt = require('bcryptjs/dist/bcrypt');
 router.post('/addNotes', async(req, res, next) => {
     let conn;
     try {
-        console.log(req.body)
-        let createAt = req.body.created_at;
-        let createdBy = req.body.createdby;
-        let message  = req.body.message
-        if (!(createdBy) || !(createAt) || !(message)) {
+        let clientId = req.body.clientId;
+        let created_at = req.body.created_at;
+        let message  = req.body.message;
+        let sessiontime = req.body.sessiontime;
+        if (!(created_at) || !(clientId) || !(message) || !(sessiontime)) {
             res.status(400).send({"message": "all input required"});
             return;
         }
         conn = await pool.getConnection();
-        let result = await conn.query("INSERT INTO notes(created_at, created_by, message) VALUES(?,?,?)",[createAt, createdBy, message]);
+        let result = await conn.query("INSERT INTO notes(clientId, message, created_at, sessiontime) VALUES(?,?,?,?)",[clientId, message, created_at,sessiontime]);
         if (result==undefined) {
-            console.log("unable into useinfo table");
+            console.log("unable into notes table");
             res.status(400).send({"message":"cant add notes to database"});
             return;
         }
@@ -33,19 +33,18 @@ router.post('/addNotes', async(req, res, next) => {
 
 router.post('/getnotes', async(req, res, next) => {
     let conn;
-    console.log("getnotes")
     try {
-        console.log(req.body)
-        let {emailid} = req.body;
-        if (!(emailid)) {
+        let {clientId, sessiontime} = req.body;
+        if (!(clientId) || !(sessiontime)) {
             res.status(400).send({"message": "all input required"});
             return;
         }
         conn = await pool.getConnection();
-        let query = "SELECT * FROM notes WHERE created_by='"+emailid+"'";
+        let query = "SELECT * FROM notes WHERE clientId='"+clientId+"'"+"and sessiontime='"+sessiontime+"'";
         let rows = await conn.query(query);
         if (rows==undefined || rows.length==0) {
             res.status(400).send({"message":"action items not found incorrect username"})
+            return;
         }
         res.status(200).send(rows)
     }catch (error) {

@@ -12,7 +12,7 @@ const users = require('./routes/user')
 const clinician = require('./routes/clinician')
 const session = require('./routes/session');
 const client = require('./routes/clinet');
-const actionitem = require('./routes/actionitems');
+const notes = require('./routes/notes');
 const ping = require('./routes/ping')
 const app = express()
 const jwt = require('jsonwebtoken');
@@ -44,7 +44,7 @@ app.use('/users', users);
 app.use('/clinician', clinician);
 app.use('/session', session);
 app.use('/client', client);
-app.use('/actionitem', actionitem);
+app.use('/notes', notes);
 app.use('/ping', ping)
 
 // creating server for rtc
@@ -69,20 +69,9 @@ io.on('connection', async (socket)=> {
       socket.to(data.id).emit("recevice_message", data)
       // console.log(data)
     });
-    socket.on("review", (data)=> {
-      socket.to(data.id).emit("movetoReview", data)
-    })
-
-    socket.on("selectscale", (data)=>{
-      socket.to(data.id).emit("selectscale",data)
-    })
-
-    socket.on("deselectscale", (data)=>{
-      socket.to(data.id).emit("deselectscale",data)
-    })
-
-    socket.on('disconnet', ()=>{
-      console.log('a user disconnected', socket.id)
+    socket.on("sendNotes", (data)=> {
+      console.log("data------------->", data)
+      socket.to(data.id).emit("get_notes", data)
     });
 });
 

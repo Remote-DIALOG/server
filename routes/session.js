@@ -29,8 +29,16 @@ router.post('/saveSession', async(req, res, next) => {
                 let rating = currentSession[i].value;
                 let help = currentSession[i].help;
                 let selected = currentSession[i].select;
-                let result = await conn.query("INSERT INTO session(clientId, scale, rating, helped, selected, created_at) VALUES(?,?,?,?,?,?)",[clinetid, scale, rating, help, selected, created_at]);
-                console.log("inseration in session table ", currentSession[i], result);
+                let actionitems = currentSession[i].actionitems;
+                if (actionitems.length>0) {
+                    for (var index=0; index<actionitems.length;index++) {
+                        await conn.query("INSERT INTO session(clientId, scale, rating, helped, selected, created_at, actionitem) VALUES(?,?,?,?,?,?,?)",[clinetid, scale, rating, help, selected, created_at, actionitems[index]]);
+                    }
+                }
+                else {
+                    let result = await conn.query("INSERT INTO session(clientId, scale, rating, helped, selected, created_at, actionitem) VALUES(?,?,?,?,?,?,?)",[clinetid, scale, rating, help, selected, created_at, null]);
+                    console.log("inseration in session table ", currentSession[i], result);
+                }
             }
         }
         // await conn.commit();x
@@ -70,7 +78,7 @@ router.post('/getPastSession', async (req, res) => {
                 dates.push(time)
             }
         }
-        console.log(dates)
+        
         let session = []
         for (var i = 0; i<dates.length; i++) {
             var tmp = []

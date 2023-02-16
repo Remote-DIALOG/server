@@ -15,13 +15,13 @@
 // scale VARCHAR(225),
 // item TEXT(500)
 // );
-// CREATE TABLE IF NOT EXISTS notes(
-// 	id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
-//     sessionid INT,FOREIGN KEY (sessionid) REFERENCES session(id),
-//     userid INT, FOREIGN KEY (userid) REFERENCES userinfo(id),
-//     commet TEXT(500),
-//     created_at VARCHAR(255)
-// );
+// CREATE TABLE IF NOT EXISTS notes(	
+//     id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+//         clientId INT,FOREIGN KEY (clientId) REFERENCES userinfo(id),
+//         message TEXT(500),
+//         created_at VARCHAR(255),
+//         sessiontime VARCHAR(255)
+//    );
 // CREATE TABLE IF NOT EXISTS parent_child_notes(
 // 	parent_note_id INT, FOREIGN KEY (parent_note_id) REFERENCES notes(id),
 //     child_note_id INT, FOREIGN KEY (child_note_id) REFERENCES notes(id)
