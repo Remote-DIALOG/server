@@ -3,7 +3,7 @@ const router = express.Router();
 const pool = require('../config/database');
 const auth = require('../middleware/auth');
 const bcrypt = require('bcryptjs/dist/bcrypt');
-
+const {removeObject} = require('../utils/encryptPassword')
 router.post('/saveSession', async(req, res, next) => {
     let conn;
     try{
@@ -22,7 +22,11 @@ router.post('/saveSession', async(req, res, next) => {
                 clinetid = currentSession[i].created_by
             }
         }
-
+        let alreadyExit = await conn.query("SELECT * FROM session WHERE created_at='"+created_at+"'");
+        if (alreadyExit.length>0) {
+            res.status(200).send({"message":"Session is already saved"})
+            return;
+        }
         for (var i=0;i<currentSession.length;i++) {
             if (currentSession[i].hasOwnProperty("name")) {
                 let scale = currentSession[i].name;
@@ -101,6 +105,110 @@ router.post('/getPastSession', async (req, res) => {
         res.status(400).send({"message":"something went wrong", "error":error.stack})
     } finally {
         if (conn) conn.release()
+    }
+});
+
+router.post('/getsessiondata', async(req, res)=> {
+    let conn;
+    try {
+        let {clientId, timestampe} = req.body;
+        if (clientId==undefined || timestampe==undefined) {
+            res.status(400).send({"message":"all input required"});
+            return;
+        }
+        
+        conn = await pool.getConnection();
+        if (timestampe=="all") {
+            
+            let sessioninfo = await conn.query("SELECT * from session WHERE clientId='"+clientId+"'");
+            if (sessioninfo==undefined || sessioninfo.length==0) {
+                res.status(404).send({"message":"no data found"});
+                return;
+            }
+            let dates = []
+            for (var i = 0; i<sessioninfo.length;i++) {
+                let time = JSON.stringify(sessioninfo[i].created_at)
+                if (dates.includes(time)==false) {
+                    dates.push(time)
+                }
+            }
+            let data = []
+            for (var i=0;i<dates.length;i++) {
+                let sessoion_data = [
+                    {"created_at":""},
+                    {"name": "Mental health",actionitems:[]},
+                    {"name":"Physical health",actionitems:[]},
+                    {"name":"Job situation",actionitems:[]},
+                    {"name":"Accommodation" ,actionitems:[]},
+                    {"name":"Leisure activities" ,actionitems:[]},
+                    {"name":"Relationship with partner/family",actionitems:[]},
+                    {"name":"Friendships",actionitems:[]},
+                    {"name":"Personal safety",actionitems:[]},
+                    {"name":"Medication",actionitems:[]},
+                    {"name":"Practical help",actionitems:[]},
+                    {"name":"Meetings",actionitems:[]}
+                ]
+                for (var j=0;j<sessioninfo.length;j++) {
+                    if (dates[i].replace(/['"]+/g, '')===sessioninfo[j].created_at) {
+                        for (var k=0;k<sessoion_data.length;k++) {
+                            if(sessoion_data[k].name===sessioninfo[j].scale && sessioninfo[j].actionitem!=null){
+                                sessoion_data[k].actionitems.push(sessioninfo[j].actionitem);
+                            }
+                        }
+                        sessoion_data[0].created_at = sessioninfo[j].created_at;
+                    }
+                   
+                }
+                data.push(sessoion_data);
+            }
+            console.log(data)
+            res.status(200).send(data)
+
+        }
+        else {
+            let current_session = [
+                {"created_at":""},
+                {"created_by":0},
+                {"name": "Mental health","value" :0, "help":null, "select":false, open:false,actionitems:[]},
+                {"name":"Physical health","value": 0, "help":null, "select":false, open:false,actionitems:[]},
+                {"name":"Job situation","value": 0, "help":null, "select":false, open:false,actionitems:[]},
+                {"name":"Accommodation" ,"value": 0, "help":null, "select":false, open:false,actionitems:[]},
+                {"name":"Leisure activities" ,"value":0, "help":null, "select":false, open:false,actionitems:[]},
+                {"name":"Relationship with partner/family","value":0, "help":null, "select":false, open:false,actionitems:[]},
+                {"name":"Friendships","value":0, "help":null, "select":false, open:false,actionitems:[]},
+                {"name":"Personal safety","value": 0, "help":null, "select":false, open:false,actionitems:[]},
+                {"name":"Medication","value":0, "help":null, "select":false, open:false,actionitems:[]},
+                {"name":"Practical help","value":0, "help":null, "select":false, open:false,actionitems:[]},
+                {"name":"Meetings","value":0, "help":null, "select":false, open:false,actionitems:[]}
+              ];
+            let data = await conn.query("SELECT * from session WHERE clientId='"+clientId+"'"+"&& created_at='"+timestampe+"'");
+            if (data.length===0) {
+                res.status(404).send({"message":"no session found for clientId "+clientId})
+                return;
+            }
+            for (var i=0;i<data.length;i++) {
+                for (j=0; j<current_session.length;j++) {
+                    if (data[i].scale === current_session[j].name) {
+                        current_session[j].name = data[i].scale;
+                        current_session[j].value = data[i].rating;
+                        current_session[j].help = data[i].help;
+                        if (data[i].actionitem!=null) { 
+                            current_session[j].actionitems.push(data[i].actionitem) 
+                        }
+                    }
+                }
+            }
+            current_session[0].created_at = timestampe
+            current_session[1].created_by = clientId;
+            res.status(200).send(current_session)
+            
+        }
+        
+    } catch(error) {
+        console.log(error) 
+        res.status(400).send({"message":"something went wrong","error":error.stack})
+    }finally {
+        if (conn) conn.release();
     }
 });
 module.exports = router;

@@ -10,7 +10,6 @@ var bcrypt = require('bcryptjs');
 router.post('/login', async(req, res, next) => {
     let conn;
     try {
-        console.log(req.body)
         let {username, password} = req.body;
         if (!(username && password)) {
             res.status(400).send({"message":"All input is required"});
