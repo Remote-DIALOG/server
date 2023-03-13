@@ -25,6 +25,7 @@ router.post('/getSessionDates', async(req, res, next) => {
                 dates.push(time)
             }
         }
+        dates = dates.reverse()
         // console.log(dates)
         res.status(200).send(dates)
     } catch(error) {

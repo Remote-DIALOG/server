@@ -34,16 +34,16 @@ router.post('/addNotes', async(req, res, next) => {
 router.post('/getnotes', async(req, res, next) => {
     let conn;
     try {
-        let {clientId, sessiontime} = req.body;
-        if (!(clientId) || !(sessiontime)) {
+        let {clientId, timestampe} = req.body;
+        if (!(clientId) || !(timestampe)) {
             res.status(400).send({"message": "all input required"});
             return;
         }
         conn = await pool.getConnection();
-        let query = "SELECT * FROM notes WHERE clientId='"+clientId+"'"+"and sessiontime='"+sessiontime+"'";
+        let query = "SELECT * FROM notes WHERE clientId='"+clientId+"'"+"and sessiontime='"+timestampe+"'";
         let rows = await conn.query(query);
         if (rows==undefined || rows.length==0) {
-            res.status(400).send({"message":"action items not found incorrect username"})
+            res.status(400).send({"message":"no notes were found"})
             return;
         }
         res.status(200).send(rows)

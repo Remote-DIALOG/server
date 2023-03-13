@@ -16,6 +16,7 @@ const notes = require('./routes/notes');
 const ping = require('./routes/ping')
 const app = express()
 const jwt = require('jsonwebtoken');
+const {addUser, removeUser, getUser, getUsersInRoom} = require('./user')
 var STATIC_CHANNELS = [{
   name: 'session',
   participants: 0,
@@ -57,18 +58,30 @@ const io = require("socket.io")(server, {
     }
   });
 io.on('connection', async (socket)=> {
-  let room = []  
-    const token = socket.handshake.auth.token;
-    const user = await jwt.verify(token, process.env.TOKEN_KEY);
-    // console.log('user', user);
-    socket.on("join_room", (data)=>{
+    
+    socket.on("join_room", async(data)=>{
       socket.join(data)
-      console.log(`User with id: ${socket.id} joined room: ${data}`)
+      // console.log(`User with id: ${socket.id} joined room: ${data}`)
+      const token = socket.handshake.auth.token;
+      const user = await jwt.verify(token, process.env.TOKEN_KEY);
+      // console.log("-----?", {id:socket.id, user, data})
+      const {error, users} = addUser({id:socket.id, name:user, room:data});
+      // console.log(users)
     });
-    socket.on("send_message", (data) => {
+
+
+    socket.on("send_message", async(data) => {
+      const userInRoom = getUsersInRoom(data.id)
+      for(var i=0;i<userInRoom.length;i++) {
+        if(userInRoom[i].name.userinfo.category=='clinician') {
+          data.current_session[13].clinicianID = userInRoom[i].name.userinfo.id
+        }
+      }
       socket.to(data.id).emit("recevice_message", data)
-      // console.log(data)
+     
     });
+
+
     socket.on("sendNotes", (data)=> {
       console.log("data------------->", data)
       socket.to(data.id).emit("get_notes", data)

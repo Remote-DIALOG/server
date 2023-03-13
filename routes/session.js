@@ -41,7 +41,6 @@ router.post('/saveSession', async(req, res, next) => {
                 }
                 else {
                     let result = await conn.query("INSERT INTO session(clientId, scale, rating, helped, selected, created_at, actionitem) VALUES(?,?,?,?,?,?,?)",[clinetid, scale, rating, help, selected, created_at, null]);
-                    console.log("inseration in session table ", currentSession[i], result);
                 }
             }
         }
@@ -161,7 +160,6 @@ router.post('/getsessiondata', async(req, res)=> {
                 }
                 data.push(sessoion_data);
             }
-            console.log(data)
             res.status(200).send(data)
 
         }
