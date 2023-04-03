@@ -13,13 +13,16 @@ router.post('/saveSession', async(req, res, next) => {
             res.status(200).send({"message":"input is not correct check again"});
             return;
         }
-        let created_at, clinetid
+        let created_at, clinetid, clinicianId
         for(var i=0;i<currentSession.length;i++) {
             if (currentSession[i].hasOwnProperty("created_at")) {
                 created_at = currentSession[i].created_at
             }
             if (currentSession[i].hasOwnProperty("created_by")) {
                 clinetid = currentSession[i].created_by
+            }
+            if (currentSession[i].hasOwnProperty("clinicianID")) {
+                clinicianId  = currentSession[i].clinicianId;
             }
         }
         let alreadyExit = await conn.query("SELECT * FROM session WHERE created_at='"+created_at+"'");

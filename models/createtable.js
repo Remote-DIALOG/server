@@ -26,6 +26,8 @@
 // 	parent_note_id INT, FOREIGN KEY (parent_note_id) REFERENCES notes(id),
 //     child_note_id INT, FOREIGN KEY (child_note_id) REFERENCES notes(id)
 // );
+// alter table session add clinicianId int;
+// ALTER TABLE session ADD FOREIGN KEY (clinicianId) REFERENCES userinfo(id); 
 // username = qmul
 // password = F0r906yr@
 // const mariadb = require("mariadb");
