@@ -23,7 +23,8 @@ var STATIC_CHANNELS = [{
   id: 2,
   sockets: []
 }];
-
+var networkInterfaces = os.networkInterfaces();
+var ipaddress = networkInterfaces['en0'][1];
 
 // add middlewares
 
@@ -58,10 +59,9 @@ const io = require("socket.io")(server, {
     }
   });
 io.on('connection', async (socket)=> {
-    
     socket.on("join_room", async(data)=>{
       socket.join(data)
-      // console.log(`User with id: ${socket.id} joined room: ${data}`)
+      console.log(`User with id: ${socket.id} joined room: ${data}`)
       const token = socket.handshake.auth.token;
       const user = await jwt.verify(token, process.env.TOKEN_KEY);
       // console.log("-----?", {id:socket.id, user, data})
@@ -87,7 +87,6 @@ io.on('connection', async (socket)=> {
       socket.to(data.id).emit("get_notes", data)
     });
 });
-
 server.listen(port, ()=>{
-    console.log(`server starting at port ${port}`)
+    console.log('Server is listing at %d and ip address is %s', port, JSON.stringify(ipaddress))
 })

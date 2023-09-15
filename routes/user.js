@@ -19,12 +19,12 @@ router.post('/login', async(req, res, next) => {
         let query = "SELECT * FROM userinfo WHERE username='"+username+"'";
         let rows = await conn.query(query);
         if (rows==undefined || rows.length==0) {
-            res.status(400).send({"message":"user no found"});
+            res.status(400).send({"message":"User no found"});
             return;
         }
         let comparepassword = await bcrypt.compare(password, rows[0].password)
         if (!comparepassword) {
-            res.status(400).send({"message":"password does not match"});
+            res.status(400).send({"message":"Password does not match"});
             return;
         }
         let userinfo = rows[0];
@@ -34,7 +34,7 @@ router.post('/login', async(req, res, next) => {
         return;
     }catch(error) {
         console.error(error);
-        res.status(400).send({"message":"something went error", "error":error.stack});
+        res.status(400).send({"message":"Something went error", "error":error.stack});
         
     } finally {
         if (conn) return conn.release();
@@ -76,10 +76,11 @@ router.post('/addClinician', async(req, res, next)=> {
         let encryptPass = await encryptPassword(password) 
         conn = await pool.getConnection();
         let userinfo = await conn.query("INSERT INTO userinfo(username, password, category, full_name) VALUES(?,?,?,?)",[username, encryptPass, 'clinician', full_name]);
-        if (userinfo==undefined) {
-            res.send(400).send({"message":"unbale to create user"})
-        }
-        res.status(200).send({"message":"user creating sucessfully"})
+        // if (userinfo==undefined) {
+        //     res.send(400).send({"message":"unbale to create user"})
+        // }
+        console.log(userinfo)
+        res.status(200).send({"message":"user creating sucessfully", "clinicianId":parseInt(userinfo.insertId)})
     }catch(error) {
         console.error(error)
         res.status(400).send({"message":"something went error", "error":error.stack});

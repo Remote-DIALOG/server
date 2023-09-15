@@ -13,7 +13,7 @@ router.post('/saveSession', async(req, res, next) => {
             res.status(200).send({"message":"input is not correct check again"});
             return;
         }
-        let created_at, clinetid, clinicianId
+        let created_at, clinetid, clinicianId = null
         for(var i=0;i<currentSession.length;i++) {
             if (currentSession[i].hasOwnProperty("created_at")) {
                 created_at = currentSession[i].created_at
@@ -21,8 +21,8 @@ router.post('/saveSession', async(req, res, next) => {
             if (currentSession[i].hasOwnProperty("created_by")) {
                 clinetid = currentSession[i].created_by
             }
-            if (currentSession[i].hasOwnProperty("clinicianID")) {
-                clinicianId  = currentSession[i].clinicianId;
+            if (currentSession[i].hasOwnProperty("clinicianId")) {
+                clinicianId = currentSession[i].clinicianID;
             }
         }
         let alreadyExit = await conn.query("SELECT * FROM session WHERE created_at='"+created_at+"'");
@@ -30,6 +30,7 @@ router.post('/saveSession', async(req, res, next) => {
             res.status(200).send({"message":"Session is already saved"})
             return;
         }
+        console.log("--------->", clinicianId)
         for (var i=0;i<currentSession.length;i++) {
             if (currentSession[i].hasOwnProperty("name")) {
                 let scale = currentSession[i].name;
@@ -39,11 +40,11 @@ router.post('/saveSession', async(req, res, next) => {
                 let actionitems = currentSession[i].actionitems;
                 if (actionitems.length>0) {
                     for (var index=0; index<actionitems.length;index++) {
-                        await conn.query("INSERT INTO session(clientId, scale, rating, helped, selected, created_at, actionitem) VALUES(?,?,?,?,?,?,?)",[clinetid, scale, rating, help, selected, created_at, actionitems[index]]);
+                        await conn.query("INSERT INTO session(clientId, scale, rating, helped, selected, created_at, actionitem, clinicianId) VALUES(?,?,?,?,?,?,?,?)",[clinetid, scale, rating, help, selected, created_at, actionitems[index], clinicianId]);
                     }
                 }
                 else {
-                    let result = await conn.query("INSERT INTO session(clientId, scale, rating, helped, selected, created_at, actionitem) VALUES(?,?,?,?,?,?,?)",[clinetid, scale, rating, help, selected, created_at, null]);
+                    let result = await conn.query("INSERT INTO session(clientId, scale, rating, helped, selected, created_at, actionitem, clinicianId) VALUES(?,?,?,?,?,?,?,?)",[clinetid, scale, rating, help, selected, created_at, null,clinicianId]);
                 }
             }
         }
