@@ -16,17 +16,9 @@ const notes = require('./routes/notes');
 const ping = require('./routes/ping')
 const app = express()
 const jwt = require('jsonwebtoken');
-const {addUser, removeUser, getUser, getUsersInRoom} = require('./user')
-var STATIC_CHANNELS = [{
-  name: 'session',
-  participants: 0,
-  id: 2,
-  sockets: []
-}];
-
+const {addUser, getUsersInRoom} = require('./user')
 
 // add middlewares
-
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     next();
@@ -81,11 +73,15 @@ io.on('connection', async (socket)=> {
      
     });
 
-
     socket.on("sendNotes", (data)=> {
       console.log("data------------->", data)
       socket.to(data.id).emit("get_notes", data)
     });
+    
+    socket.on('forceDisconnect', ()=>{
+      console.log("disconnecting the socket")
+      socket.disconnect();
+    })
 });
 
 server.listen(port, ()=>{
