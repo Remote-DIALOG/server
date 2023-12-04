@@ -13,7 +13,8 @@ router.post('/saveSession', async(req, res, next) => {
             res.status(200).send({"message":"input is not correct check again"});
             return;
         }
-        let created_at, clinetid, clinicianId
+        let created_at, clinetid
+        let clinicianId = -1
         for(var i=0;i<currentSession.length;i++) {
             if (currentSession[i].hasOwnProperty("created_at")) {
                 created_at = currentSession[i].created_at
@@ -22,7 +23,7 @@ router.post('/saveSession', async(req, res, next) => {
                 clinetid = currentSession[i].created_by
             }
             if (currentSession[i].hasOwnProperty("clinicianID")) {
-                clinicianId  = currentSession[i].clinicianId;
+                clinicianId  = currentSession[i].clinicianID;
             }
         }
         let alreadyExit = await conn.query("SELECT * FROM session WHERE created_at='"+created_at+"'");
@@ -39,21 +40,21 @@ router.post('/saveSession', async(req, res, next) => {
                 let actionitems = currentSession[i].actionitems;
                 if (actionitems.length>0) {
                     for (var index=0; index<actionitems.length;index++) {
-                        await conn.query("INSERT INTO session(clientId, scale, rating, helped, selected, created_at, actionitem) VALUES(?,?,?,?,?,?,?)",[clinetid, scale, rating, help, selected, created_at, actionitems[index]]);
+                        await conn.query("INSERT INTO session(clientId, scale, rating, helped, selected, created_at, actionitem, clinicianId) VALUES(?,?,?,?,?,?,?,?)",[clinetid, scale, rating, help, selected, created_at, actionitems[index], clinicianId]);
                     }
                 }
                 else {
-                    let result = await conn.query("INSERT INTO session(clientId, scale, rating, helped, selected, created_at, actionitem) VALUES(?,?,?,?,?,?,?)",[clinetid, scale, rating, help, selected, created_at, null]);
+                    let result = await conn.query("INSERT INTO session(clientId, scale, rating, helped, selected, created_at, actionitem, clinicianId) VALUES(?,?,?,?,?,?,?,?)",[clinetid, scale, rating, help, selected, created_at, null, clinicianId]);
                 }
             }
         }
         // await conn.commit();x
-        res.status(200).send({"message":"session is inserted into table"});
+        res.status(200).send({"message":"session is sucessfully saved in database"});
     
     }catch(error) {
         console.log(error)
         conn.rollback();
-        res.status(400).send({"message":"Something went wrong", "error":error.stack})
+        res.status(400).send({"message":"Something went wrong could not save the session in databases", "error":error.stack})
 
     }finally {
         if (conn) conn.release()

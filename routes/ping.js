@@ -1,11 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const pool = require('../config/database');
-const auth = require('../middleware/auth');
-const {encryptPassword} = require('../utils/encryptPassword');
-const jwt = require('jsonwebtoken');
-var bcrypt = require('bcryptjs');
-router.post('/', async(req, res, next) => {
-    res.status(200).send("Server is alive")
+router.post('/', async(req, res) => {
+    const healthCheck = {
+        uptime:process.uptime,
+        message:"Ok",
+        timestamp: Date.now()
+    }
+    res.status(200).send(healthCheck)
 })
 module.exports = router;
