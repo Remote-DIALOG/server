@@ -32,7 +32,6 @@ if (process.platform == 'linux') {
 	ipaddress = os.networkInterfaces()['eth0'][1]
 }
 // add middlewares
-
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     next();
@@ -86,11 +85,15 @@ io.on('connection', async (socket)=> {
      
     });
 
-
     socket.on("sendNotes", (data)=> {
       console.log("data------------->", data)
       socket.to(data.id).emit("get_notes", data)
     });
+    
+    socket.on('forceDisconnect', ()=>{
+      console.log("disconnecting the socket")
+      socket.disconnect();
+    })
 });
 server.listen(port, ()=>{
     console.log('Server is listing at %d and ip address is %s', port, JSON.stringify(ipaddress))
