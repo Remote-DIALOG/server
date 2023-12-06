@@ -10,8 +10,8 @@ def generate_password(password):
 
 urls = {
     "prod": {
-                'addClinician': 'https://dialogplus.bcc.qmul.ac.uk/users/addClinician', 
-                'addClient': 'https://dialogplus.bcc.qmul.ac.uk/clinician/addClient'
+                'addClinician': 'http://35.178.194.72:8080/users/addClinician', 
+                'addClient': 'http://35.178.194.72:8080/clinician/addClient'
             },
 
     "dev": {
