@@ -52,8 +52,8 @@ clinician_name = [
         "name" :"remotedialogC5",
          "password":"", 
          "client": [
-                 {"username":"remotedialogS8", "name":"remotedialogS8", "password":""},
-                 {"username":"remotedialogS9", "name":"remotedialogS9", "password":""}
+                 {"username":"remotedialogS9", "name":"remotedialogS8", "password":""},
+                 {"username":"remotedialogS10", "name":"remotedialogS9", "password":""}
             ]
     }, 
     {
@@ -61,8 +61,8 @@ clinician_name = [
         "name" :"remotedialogC6",
          "password":"", 
          "client": [
-                 {"username":"remotedialogS10", "name":"remotedialogS10", "password":""},
-                 {"username":"remotedialogS11", "name":"remotedialogS11", "password":""}
+                 {"username":"remotedialogS11", "name":"remotedialogS10", "password":""},
+                 {"username":"remotedialogS12", "name":"remotedialogS11", "password":""}
             ]
     }, 
     {
@@ -70,8 +70,8 @@ clinician_name = [
         "name" :"remotedialogC7",
          "password":"", 
          "client": [
-                 {"username":"remotedialogS12", "name":"remotedialogS12", "password":""},
-                 {"username":"remotedialogS13", "name":"remotedialogS13", "password":""}
+                 {"username":"remotedialogS13", "name":"remotedialogS12", "password":""},
+                 {"username":"remotedialogS14", "name":"remotedialogS13", "password":""}
             ]
     }, 
     {
@@ -80,7 +80,7 @@ clinician_name = [
          "password":"", 
          "client": [
                  {"username":"remotedialogS14", "name":"remotedialogS15", "password":""},
-                 {"username":"remotedialogS15", "name":"remotedialogS15", "password":""}
+                 {"username":"remotedialogS16", "name":"remotedialogS15", "password":""}
             ]
     }, 
     {
@@ -88,8 +88,8 @@ clinician_name = [
         "name" :"remotedialogC9",
          "password":"", 
          "client": [
-                 {"username":"remotedialogS16", "name":"remotedialogS16", "password":""},
-                 {"username":"remotedialogS17", "name":"remotedialogS17", "password":""}
+                 {"username":"remotedialogS17", "name":"remotedialogS16", "password":""},
+                 {"username":"remotedialogS18", "name":"remotedialogS17", "password":""}
             ]
     }, 
     {
@@ -97,8 +97,8 @@ clinician_name = [
         "name" :"remotedialogC10",
          "password":"", 
          "client": [
-                 {"username":"remotedialogS18", "name":"remotedialogS18", "password":""},
-                 {"username":"remotedialogS19", "name":"remotedialogS19", "password":""}
+                 {"username":"remotedialogS19", "name":"remotedialogS18", "password":""},
+                 {"username":"remotedialogS20", "name":"remotedialogS19", "password":""}
             ]
     }, 
     {
@@ -106,8 +106,8 @@ clinician_name = [
         "name" :"remotedialogC11",
          "password":"", 
          "client": [
-                 {"username":"remotedialog20", "name":"remotedialogS20", "password":""},
-                 {"username":"remotedialog21", "name":"remotedialogS21", "password":""}
+                 {"username":"remotedialog21", "name":"remotedialogS20", "password":""},
+                 {"username":"remotedialog22", "name":"remotedialogS21", "password":""}
             ]
     }, 
     {
@@ -115,8 +115,8 @@ clinician_name = [
         "name" :"remotedialogC12",
          "password":"", 
          "client": [
-                 {"username":"remotedialogS22", "name":"remotedialogS22", "password":""},
-                 {"username":"remotedialogS23", "name":"remotedialogS23", "password":""}
+                 {"username":"remotedialogS23", "name":"remotedialogS22", "password":""},
+                 {"username":"remotedialogS24", "name":"remotedialogS23", "password":""}
             ]
     }, 
     {
@@ -124,8 +124,8 @@ clinician_name = [
         "name" :"remotedialogC13",
          "password":"", 
          "client": [
-                 {"username":"remotedialogS24", "name":"remotedialogS24", "password":""},
-                 {"username":"remotedialogS25", "name":"remotedialogS25", "password":""}
+                 {"username":"remotedialogS25", "name":"remotedialogS24", "password":""},
+                 {"username":"remotedialogS26", "name":"remotedialogS25", "password":""}
             ]
     }, 
 ]
@@ -135,6 +135,7 @@ for names in clinician_name:
     password = names['password']
     password = generate_password(password)
     name = names['name']
+    print("making request to server {}".format(urls['prod']['addClinician']))
     response = requests.post(urls['prod']['addClinician'], json =  {"username":username,"password":password,"full_name":name})
     print(response.json())
     clinician_id = response.json()['clinicianId']
@@ -150,4 +151,4 @@ for names in clinician_name:
             userinfo.append((email, password, fullname, 'client', username))
 print(userinfo)
 dataframe = pd.DataFrame (userinfo, columns = ['username', 'password','fullname', 'type', 'clinician_name'])
-dataframe.to_csv('./node_count.csv')
+dataframe.to_csv('./usernames.csv')
