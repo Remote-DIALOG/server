@@ -17,7 +17,7 @@ const ping = require('./routes/ping')
 const app = express()
 const jwt = require('jsonwebtoken');
 const {addUser, getUsersInRoom} = require('./user')
-
+console.log(process.env)
 // add middlewares
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
