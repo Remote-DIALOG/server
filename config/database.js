@@ -9,7 +9,7 @@ const pool = mariadb.createPool({
     user: process.env.DB_USER,
     password:process.env.DB_PASS,
     database:process.env.DB_NAME,
-    connectionLimit: 100
+    connectionLimit: 5
 });
 /*const pool = mariadb.createPool({
     host: 'localhost',
