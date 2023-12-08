@@ -39,11 +39,11 @@ router.post('/saveSession', async(req, res, next) => {
                 let actionitems = currentSession[i].actionitems;
                 if (actionitems.length>0) {
                     for (var index=0; index<actionitems.length;index++) {
-                        await conn.query("INSERT INTO session(clientId, scale, rating, helped, selected, created_at, actionitem) VALUES(?,?,?,?,?,?,?)",[clinetid, scale, rating, help, selected, created_at, actionitems[index]]);
+                        await conn.query("INSERT INTO session(clientId, scale, rating, helped, selected, created_at, actionitem, clinicianId) VALUES(?,?,?,?,?,?,?,?)",[clinetid, scale, rating, help, selected, created_at, actionitems[index], clinicianId]);
                     }
                 }
                 else {
-                    let result = await conn.query("INSERT INTO session(clientId, scale, rating, helped, selected, created_at, actionitem) VALUES(?,?,?,?,?,?,?)",[clinetid, scale, rating, help, selected, created_at, null]);
+                    let result = await conn.query("INSERT INTO session(clientId, scale, rating, helped, selected, created_at, actionitem, clinicianId) VALUES(?,?,?,?,?,?,?,?)",[clinetid, scale, rating, help, selected, created_at, null, clinicianId]);
                 }
             }
         }
