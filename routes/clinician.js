@@ -37,6 +37,7 @@ router.post("/addClient", async(req, res, next) => {
     let fullname = req.body.fullname;
     let emailid = req.body.email;
     let password = req.body.password;
+    // console.log("------------>", req.body)
     let category = "client";
     if (!(clinicianid) && !(clientname) && !(emailid) && !(password)) {
         res.status(400).send({"message":"All input is required"});
@@ -64,7 +65,6 @@ router.post("/addClient", async(req, res, next) => {
         console.log("unable to insert in clinet list table");
         res.status(400).send({"message":"user not added in list table"});
         return;
-
     }
     res.status(200).send({"message":"user added sucessfully"});
     }catch(error) {

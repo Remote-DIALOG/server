@@ -66,11 +66,16 @@ io.on('connection', async (socket)=> {
     socket.on("join_room", async(data)=>{
       socket.join(data)
       console.log(`User with id: ${socket.id} joined room: ${data}`)
-      const token = socket.handshake.auth.token;
-      const user = await jwt.verify(token, process.env.TOKEN_KEY);
-      // console.log("-----?", {id:socket.id, user, data})
-      const {error, users} = addUser({id:socket.id, name:user, room:data});
-      // console.log(users)
+      let user;
+      try {
+        const token = socket.handshake.auth.token;
+        user = await jwt.verify(token, process.env.TOKEN_KEY);
+        const {error, users} = addUser({id:socket.id, name:user, room:data});
+      } catch (error) {
+        console.log("expire token cant join ")
+        socket.disconnect();
+        return;
+      }
     });
 
 

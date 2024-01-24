@@ -73,6 +73,7 @@ router.post('/addClinician', async(req, res, next)=> {
     let conn;
     try {
         let {username,password, full_name} = req.body;
+       
         let encryptPass = await encryptPassword(password) 
         conn = await pool.getConnection();
         let userinfo = await conn.query("INSERT INTO userinfo(username, password, category, full_name) VALUES(?,?,?,?)",[username, encryptPass, 'clinician', full_name]);
