@@ -21,7 +21,7 @@ router.post('/saveSession', async(req, res, next) => {
             if (currentSession[i].hasOwnProperty("created_by")) {
                 clinetid = currentSession[i].created_by
             }
-            if (currentSession[i].hasOwnProperty("clinicianId")) {
+            if (currentSession[i].hasOwnProperty("clinicianID")) {
                 clinicianId = currentSession[i].clinicianID;
             }
         }
@@ -30,7 +30,7 @@ router.post('/saveSession', async(req, res, next) => {
             res.status(200).send({"message":"Session is already saved"})
             return;
         }
-        console.log("--------->", clinicianId)
+        console.log("clinician id --------->", clinicianId)
         for (var i=0;i<currentSession.length;i++) {
             if (currentSession[i].hasOwnProperty("name")) {
                 let scale = currentSession[i].name;
