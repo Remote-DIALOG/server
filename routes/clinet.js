@@ -20,12 +20,15 @@ router.post('/getSessionDates', async(req, res, next) => {
         }
         let dates = []
         for (var i = 0; i<rows.length;i++) {
-            let time = JSON.stringify(rows[i].created_at)
+            let time = JSON.stringify({"date":rows[i].created_at, "clinicianId":rows[i].clinicianId})
             if (dates.includes(time)==false) {
                 dates.push(time)
             }
         }
         dates = dates.reverse()
+        for (let i=0; i<dates.length;i++){
+            dates[i] = JSON.parse(dates[i])
+        }
         // console.log(dates)
         res.status(200).send(dates)
     } catch(error) {

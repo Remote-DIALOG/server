@@ -213,4 +213,24 @@ router.post('/getsessiondata', async(req, res)=> {
         if (conn) conn.release();
     }
 });
+router.post('/saveLogs', async(req, res) => {
+    let conn;
+    try{
+        let log_message = req.body.message;
+        console.log("in logs api call-------------------->", log_message.length)
+        if (log_message==undefined) {
+            res.status(400).send({"message":"message is empty"})
+            return;
+        }
+        conn = await pool.getConnection()
+        let data = await conn.query("INSERT INTO log(message) VALUES(?)",[log_message]);
+        res.status(200).send({"message":"inserted sucessfully"})
+        
+    }catch(error) {
+        console.log(error) 
+        res.status(400).send({"message":"something went wrong","error":error.stack})
+    }finally {
+        if (conn) conn.release();
+    }
+});
 module.exports = router;

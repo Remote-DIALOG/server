@@ -6,6 +6,7 @@ const {encryptPassword} = require('../utils/encryptPassword');
 const jwt = require('jsonwebtoken');
 var bcrypt = require('bcryptjs');
 router.post('/', async(req, res, next) => {
+    console.log(req)
     res.status(200).send("Server is alive")
 })
 module.exports = router;
