@@ -111,6 +111,53 @@ router.post('/getPastSession', async (req, res) => {
     }
 });
 
+
+router.post("/getfullsummary", async(req, res) => {
+    let conn;
+    try {
+        let {clientId} = req.body;
+        if (clientId==undefined) {
+            res.status(400).send({"message":"all input required"});
+            return;
+        }
+        conn = await pool.getConnection();
+        
+        let sessioninfo = await conn.query("SELECT * from session WHERE clientId='"+clientId+"'");
+        if (sessioninfo==undefined || sessioninfo.length==0) {
+            res.status(404).send({"message":"no data found"});
+            return;
+        }
+        let dates = []
+        for (var i = 0; i<sessioninfo.length;i++) {
+            let time = JSON.stringify(sessioninfo[i].created_at)
+            if (dates.includes(time)==false) {
+                dates.push(time)
+            }
+        }
+        let session_data = []
+        for (var i=0;i<dates.length;i++) {
+            let session_summary = [ {"created_at":""},{"actionitem":[]}]
+            for (var j=0;j<sessioninfo.length;j++) {
+                if (dates[i].replace(/['"]+/g, '') === sessioninfo[j].created_at) {
+                    if (sessioninfo[j].actionitem!=null)
+                        session_summary[1].actionitem.push(sessioninfo[j].actionitem)
+                }
+                session_summary[0].created_at = sessioninfo[j].created_at;
+               
+            }
+            session_data.push(session_summary);
+        }
+        session_data = session_data.reverse()
+        res.status(200).send(session_data)
+    } catch(error) {
+        console.log(error) 
+        res.status(400).send({"message":"something went wrong","error":error.stack})
+
+    } finally {
+        if (conn) conn.release()
+    }
+
+});
 router.post('/getsessiondata', async(req, res)=> {
     let conn;
     try {
@@ -164,6 +211,8 @@ router.post('/getsessiondata', async(req, res)=> {
                 }
                 data.push(sessoion_data);
             }
+
+            data = data.reverse()
             res.status(200).send(data)
 
         }
@@ -202,6 +251,7 @@ router.post('/getsessiondata', async(req, res)=> {
             }
             current_session[0].created_at = timestampe
             current_session[1].created_by = clientId;
+            current_session = current_session.reverse()
             res.status(200).send(current_session)
             
         }
