@@ -4,6 +4,8 @@ const pool = require('../config/database');
 const auth = require('../middleware/auth');
 const bcrypt = require('bcryptjs/dist/bcrypt');
 const {removeObject} = require('../utils/encryptPassword')
+const fs = require('fs');
+const path = require('path');
 router.post('/saveSession', async(req, res, next) => {
     let conn;
     try{
@@ -142,7 +144,7 @@ router.post("/getfullsummary", async(req, res) => {
                     if (sessioninfo[j].actionitem!=null)
                         session_summary[1].actionitem.push(sessioninfo[j].actionitem)
                 }
-                session_summary[0].created_at = sessioninfo[j].created_at;
+                session_summary[0].created_at = dates[i].replace(/['"]+/g, '')
                
             }
             session_data.push(session_summary);
@@ -265,15 +267,18 @@ router.post('/getsessiondata', async(req, res)=> {
 });
 router.post('/saveLogs', async(req, res) => {
     let conn;
+    const logFilePath = path.join(__dirname, 'server.log');
     try{
         let log_message = req.body.message;
-        console.log("in logs api call-------------------->", log_message.length)
+        // console.log("in logs api call-------------------->", log_message)
         if (log_message==undefined) {
             res.status(400).send({"message":"message is empty"})
             return;
         }
-        conn = await pool.getConnection()
-        let data = await conn.query("INSERT INTO log(message) VALUES(?)",[log_message]);
+        // fs.appendFileSync(logFilePath, log_message);
+        // res.end('Hello, World!');
+        // conn = await pool.getConnection()
+        // let data = await conn.query("INSERT INTO log(message) VALUES(?)",[log_message]);
         res.status(200).send({"message":"inserted sucessfully"})
         
     }catch(error) {
