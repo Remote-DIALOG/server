@@ -277,8 +277,8 @@ router.post('/saveLogs', async(req, res) => {
         }
         // fs.appendFileSync(logFilePath, log_message);
         // res.end('Hello, World!');
-        // conn = await pool.getConnection()
-        // let data = await conn.query("INSERT INTO log(message) VALUES(?)",[log_message]);
+        conn = await pool.getConnection()
+        let data = await conn.query("INSERT INTO log(message) VALUES(?)",[log_message]);
         res.status(200).send({"message":"inserted sucessfully"})
         
     }catch(error) {
