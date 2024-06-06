@@ -17,7 +17,7 @@ const pool = mariadb.createPool({
     user: 'qmul',
     password:'F0r906yr@',
     database:'dialogplus',
-    connectionLimit: 5
+    connectionLimit: 100
 });*/
 module.exports={
     getConnection: function(){

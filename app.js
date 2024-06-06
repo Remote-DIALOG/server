@@ -16,13 +16,6 @@ const notes = require('./routes/notes');
 const ping = require('./routes/ping')
 const app = express()
 const jwt = require('jsonwebtoken');
-const {addUser, removeUser, getUser, getUsersInRoom} = require('./user')
-var STATIC_CHANNELS = [{
-  name: 'session',
-  participants: 0,
-  id: 2,
-  sockets: []
-}];
 var networkInterfaces = os.networkInterfaces();
 var ipaddress; 
 if (process.platform == 'darwin')  {
@@ -31,6 +24,7 @@ if (process.platform == 'darwin')  {
 if (process.platform == 'linux') {
 	ipaddress = os.networkInterfaces()['eth0'][1]
 }
+const {addUser, getUsersInRoom} = require('./user')
 // add middlewares
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
