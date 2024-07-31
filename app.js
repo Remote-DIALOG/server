@@ -50,7 +50,7 @@ app.use('/ping', ping)
 
 // creating server for rtc
 const server = http.createServer(app)
-const port = process.env.PORT
+const port = process.env.PORT || 443
 const io = require("socket.io")(server, {
     cors: {
       origin:"*",
