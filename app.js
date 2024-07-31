@@ -17,13 +17,13 @@ const ping = require('./routes/ping')
 const app = express()
 const jwt = require('jsonwebtoken');
 var networkInterfaces = os.networkInterfaces();
-var ipaddress; 
-if (process.platform == 'darwin')  {
-	ipaddress = os.networkInterfaces()['en0'][1]
-}
-if (process.platform == 'linux') {
-	ipaddress = os.networkInterfaces()['eth0'][1]
-}
+var ipaddress = ""; 
+// if (process.platform == 'darwin')  {
+// 	ipaddress = os.networkInterfaces()['en0'][1]
+// }
+// if (process.platform == 'linux') {
+// 	ipaddress = os.networkInterfaces()['eth0'][1]
+// }
 const {addUser, getUsersInRoom} = require('./user')
 // add middlewares
 app.use((req, res, next) => {
