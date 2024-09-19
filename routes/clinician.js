@@ -71,5 +71,8 @@ router.post("/addClient", async(req, res, next) => {
         console.log("error", error)
         res.status(400).send({"message":"something went wrong", "error":error})
     }
+    finally {
+        if (conn) conn.release()
+    }
 })
 module.exports = router;
