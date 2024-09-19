@@ -3,9 +3,10 @@ const router = express.Router();
 const pool = require('../config/database');
 const auth = require('../middleware/auth');
 const bcrypt = require('bcryptjs/dist/bcrypt');
-const {removeObject} = require('../utils/encryptPassword')
+const {removeObject, isExit} = require('../utils/encryptPassword')
 const fs = require('fs');
 const path = require('path');
+const { toNamespacedPath } = require('path');
 router.post('/saveSession', async(req, res, next) => {
     let conn;
     try{
@@ -73,8 +74,9 @@ router.post('/getPastSession', async (req, res) => {
             return;
         }
         conn = await pool.getConnection()
+        let session_query = `SELECT * FROM session WHERE clientId='${clientId}'`
         let fidnQuery = "SELECT * FROM session WHERE clientId='"+clientId+"'";
-        let result = await conn.query(fidnQuery);
+        let result = await conn.query(session_query);
         if (result.length==0) {
             res.status(404).send({"message":"no session found for this clinetid"})
             return;
@@ -82,21 +84,24 @@ router.post('/getPastSession', async (req, res) => {
         let dates = []
         for (var index = 0; index<result.length; index++) {
             let time = JSON.stringify(result[index].created_at)
-
             if (dates.includes(time)==false) {
                 dates.push(time)
             }
         }
-        
         let session = []
         for (var i = 0; i<dates.length; i++) {
             var tmp = []
             for (var j = 0; j< result.length;j++) {
                 if (dates[i] == JSON.stringify(result[j].created_at)) {
-                    tmp.push({
+                    let values = {
                         "name":result[j].scale,
                         "value":result[j].rating
-                    })
+                    }
+                    console.log(isExit(tmp, values))
+                    if (isExit(tmp, values)==false) {
+                        tmp.push(values)
+                    }
+
                 }
             }
             tmp.unshift({"created_by":clientId})
