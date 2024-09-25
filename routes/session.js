@@ -6,7 +6,6 @@ const bcrypt = require('bcryptjs/dist/bcrypt');
 const {removeObject, isExit} = require('../utils/encryptPassword')
 const fs = require('fs');
 const path = require('path');
-const { toNamespacedPath } = require('path');
 router.post('/saveSession', async(req, res, next) => {
     let conn;
     try{
@@ -51,7 +50,7 @@ router.post('/saveSession', async(req, res, next) => {
                 }
             }
         }
-        // await conn.commit();x
+        // await conn.commit();
         res.status(200).send({"message":"session is inserted into table"});
     
     }catch(error) {
@@ -97,7 +96,6 @@ router.post('/getPastSession', async (req, res) => {
                         "name":result[j].scale,
                         "value":result[j].rating
                     }
-                    console.log(isExit(tmp, values))
                     if (isExit(tmp, values)==false) {
                         tmp.push(values)
                     }
@@ -105,8 +103,7 @@ router.post('/getPastSession', async (req, res) => {
                 }
             }
             tmp.unshift({"created_by":clientId})
-            tmp.unshift({"created_at":dates[i]})
-
+            tmp.unshift({"created_at":dates[i]})    
             session.push(tmp)
         }
         res.status(200).send(session)
@@ -218,10 +215,8 @@ router.post('/getsessiondata', async(req, res)=> {
                 }
                 data.push(sessoion_data);
             }
-
-            data = data.reverse()
+            // data = data.reverse()
             res.status(200).send(data)
-
         }
         else {
             let current_session = [
